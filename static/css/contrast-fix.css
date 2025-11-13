@@ -1,0 +1,138 @@
+/* Contrast Fix CSS - Ensures all text is readable */
+
+/* Force light backgrounds and dark text everywhere */
+* {
+    color: #1f2937 !important;
+}
+
+/* Override for elements that should have white text */
+.navbar, .navbar *, 
+.btn-primary, .btn-primary *,
+.badge, .badge *,
+.alert-success, .alert-success *,
+.alert-info, .alert-info *,
+.alert-warning, .alert-warning *,
+.alert-danger, .alert-danger *,
+.welcome-header, .welcome-header *,
+.hero-section, .hero-section *,
+.cta-section, .cta-section *,
+.bg-primary, .bg-primary *,
+.bg-success, .bg-success *,
+.bg-info, .bg-info *,
+.bg-warning, .bg-warning *,
+.bg-danger, .bg-danger *,
+.text-white, .text-white * {
+    color: #ffffff !important;
+}
+
+/* Ensure all backgrounds are light */
+body, 
+.card, .card-body, .card-header,
+.dashboard-card, .dashboard-card *,
+.job-card, .application-item,
+.stat-card, .profile-info,
+.modal-content, .dropdown-menu,
+.form-control, .form-select,
+.table, .table td, .table th {
+    background-color: #ffffff !important;
+    color: #1f2937 !important;
+}
+
+/* Fix specific components */
+.card-header {
+    background-color: #f8fafc !important;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f3f4f6 !important;
+}
+
+/* Muted text should be gray, not black */
+.text-muted, .text-muted * {
+    color: #6b7280 !important;
+}
+
+/* Links should be blue */
+a, a * {
+    color: #3b82f6 !important;
+}
+
+a:hover, a:hover * {
+    color: #2563eb !important;
+}
+
+/* Form elements */
+.form-control, .form-select {
+    background-color: #ffffff !important;
+    color: #1f2937 !important;
+    border-color: #d1d5db !important;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: #ffffff !important;
+    color: #1f2937 !important;
+    border-color: #6366f1 !important;
+}
+
+/* Ensure dropdowns are readable */
+.dropdown-menu {
+    background-color: #ffffff !important;
+}
+
+.dropdown-item {
+    color: #1f2937 !important;
+}
+
+.dropdown-item:hover {
+    background-color: #f3f4f6 !important;
+    color: #1f2937 !important;
+}
+
+/* Fix any remaining dark backgrounds */
+.bg-dark {
+    background-color: #1f2937 !important;
+    color: #ffffff !important;
+}
+
+.bg-light {
+    background-color: #f8fafc !important;
+    color: #1f2937 !important;
+}
+
+/* Score circles and badges */
+.score-circle {
+    color: #ffffff !important;
+}
+
+/* Skills tags */
+.skill-tag, .skills-tags .badge {
+    background-color: #e5e7eb !important;
+    color: #374151 !important;
+}
+
+/* Progress bars */
+.progress {
+    background-color: #e5e7eb !important;
+}
+
+/* Tooltips and popovers */
+.tooltip-inner {
+    background-color: #1f2937 !important;
+    color: #ffffff !important;
+}
+
+.popover {
+    background-color: #ffffff !important;
+    color: #1f2937 !important;
+}
+
+/* Toast notifications */
+.toast {
+    background-color: #ffffff !important;
+    color: #1f2937 !important;
+}
+
+.toast-header {
+    background-color: #f8fafc !important;
+    color: #1f2937 !important;
+}

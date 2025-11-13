@@ -1,0 +1,5 @@
+model,accuracy,f1_score,precision,recall
+resume_classifier,,,,
+skills_extractor,,,,
+job_matcher,1.0,1.0,1.0,1.0
+ner_model,,,,

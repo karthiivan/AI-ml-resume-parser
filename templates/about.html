@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}About - AI Resume Parser{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-primary">About AI Resume Parser</h1>
+                <p class="lead text-muted">Revolutionizing recruitment with artificial intelligence</p>
+            </div>
+            
+            <div class="card shadow-lg border-0 mb-5">
+                <div class="card-body p-5">
+                    <h2 class="h3 mb-4">Our Mission</h2>
+                    <p class="mb-4">
+                        AI Resume Parser is designed to streamline the recruitment process by leveraging advanced 
+                        artificial intelligence and machine learning technologies. We help HR professionals and 
+                        job seekers connect more efficiently by automatically analyzing and matching resumes 
+                        with job requirements.
+                    </p>
+                    
+                    <h2 class="h3 mb-4">How It Works</h2>
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-upload fa-2x text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h5>Upload Resume</h5>
+                                    <p class="text-muted">Job seekers upload their resumes in PDF, DOC, or DOCX format.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-brain fa-2x text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h5>AI Analysis</h5>
+                                    <p class="text-muted">Our AI extracts skills, experience, and education information.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-search fa-2x text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h5>Job Matching</h5>
+                                    <p class="text-muted">Smart algorithms match candidates with relevant job openings.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-chart-line fa-2x text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h5>Scoring & Ranking</h5>
+                                    <p class="text-muted">Candidates receive compatibility scores for better decision making.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg me-3">Get Started</a>
+                <a href="{{ url_for('main.contact') }}" class="btn btn-outline-primary btn-lg">Contact Us</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

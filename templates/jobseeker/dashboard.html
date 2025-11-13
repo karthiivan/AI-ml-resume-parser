@@ -1,0 +1,767 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Job Seeker{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="container-fluid">
+        <!-- Welcome Header -->
+        <div class="welcome-header mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="welcome-title">
+                        Welcome back, {{ jobseeker.name or 'Job Seeker' }}! 👋
+                    </h1>
+                    <p class="welcome-subtitle">
+                        Ready to find your next opportunity? Let's get started with your job search.
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="profile-completion">
+                        <div class="completion-circle">
+                            <svg class="progress-ring" width="80" height="80">
+                                <circle class="progress-ring-circle" stroke="#e5e7eb" stroke-width="4" fill="transparent" r="36" cx="40" cy="40"/>
+                                <circle class="progress-ring-circle progress" stroke="#10b981" stroke-width="4" fill="transparent" r="36" cx="40" cy="40" 
+                                        data-percentage="{{ 85 if stats.has_resume else 45 }}"/>
+                            </svg>
+                            <div class="completion-text">
+                                <span class="percentage">{{ 85 if stats.has_resume else 45 }}%</span>
+                                <small>Complete</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stat-card">
+                    <div class="stat-icon bg-primary">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number">{{ stats.total_applications }}</h3>
+                        <p class="stat-label">Total Applications</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stat-card">
+                    <div class="stat-icon bg-warning">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number">{{ stats.pending_applications }}</h3>
+                        <p class="stat-label">Pending Reviews</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stat-card">
+                    <div class="stat-icon bg-success">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number">{{ stats.shortlisted }}</h3>
+                        <p class="stat-label">Shortlisted</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stat-card">
+                    <div class="stat-icon bg-info">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number">{{ (stats.total_applications * 3.2) | round | int }}</h3>
+                        <p class="stat-label">Profile Views</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                <!-- Resume Upload Section -->
+                {% if not stats.has_resume %}
+                <div class="action-card mb-4">
+                    <div class="card-body text-center">
+                        <div class="upload-icon mb-3">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <h4>Upload Your Resume</h4>
+                        <p class="text-muted mb-4">
+                            Get started by uploading your resume. Our AI will parse it and help you find matching jobs.
+                        </p>
+                        <a href="{{ url_for('jobseeker.upload_resume') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-upload me-2"></i>Upload Resume
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Recent Applications -->
+                <div class="dashboard-card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-history me-2"></i>Recent Applications
+                        </h5>
+                        <a href="{{ url_for('jobseeker.my_applications') }}" class="btn btn-sm btn-outline-primary">
+                            View All
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        {% if recent_applications %}
+                            <div class="applications-list">
+                                {% for application in recent_applications %}
+                                <div class="application-item">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-6">
+                                            <h6 class="job-title">{{ application.job.title }}</h6>
+                                            <p class="company-name">{{ application.job.company }}</p>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="ai-score">
+                                                <div class="score-circle score-{{ application.ai_score | score_color }}">
+                                                    {{ application.ai_score | round | int }}%
+                                                </div>
+                                                <small class="text-muted">AI Match</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <span class="badge bg-{{ application.status | status_color }}">
+                                                {{ application.status.title() }}
+                                            </span>
+                                            <small class="d-block text-muted mt-1">
+                                                {{ application.applied_at | datetime('%b %d') }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="empty-state text-center py-4">
+                                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                <h6>No Applications Yet</h6>
+                                <p class="text-muted">Start applying to jobs to see your applications here.</p>
+                                <a href="{{ url_for('jobseeker.view_jobs') }}" class="btn btn-primary">
+                                    Browse Jobs
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Recommended Jobs -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-magic me-2"></i>Recommended Jobs
+                        </h5>
+                        <a href="{{ url_for('jobseeker.view_jobs') }}" class="btn btn-sm btn-outline-primary">
+                            View All Jobs
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        {% if recommended_jobs %}
+                            <div class="jobs-grid">
+                                {% for job_match in recommended_jobs %}
+                                <div class="job-card">
+                                    <div class="job-header">
+                                        <h6 class="job-title">{{ job_match.job.title }}</h6>
+                                        <span class="company-name">{{ job_match.job.company }}</span>
+                                    </div>
+                                    <p class="job-location">
+                                        <i class="fas fa-map-marker-alt me-1"></i>{{ job_match.job.location }}
+                                    </p>
+                                    <div class="job-skills">
+                                        {% for skill in job_match.job.get_required_skills()[:3] %}
+                                        <span class="skill-tag">{{ skill }}</span>
+                                        {% endfor %}
+                                        {% if job_match.job.get_required_skills() | length > 3 %}
+                                        <span class="skill-tag">+{{ job_match.job.get_required_skills() | length - 3 }} more</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="job-footer">
+                                        <small class="text-muted">{{ job_match.job.created_at | datetime('%b %d') }}</small>
+                                        {% if job_match.has_applied %}
+                                            <button class="btn btn-sm btn-success" disabled>
+                                                <i class="fas fa-check me-1"></i>Applied
+                                                {% if job_match.application %}
+                                                    <span class="badge bg-light text-dark ms-1">{{ job_match.application.ai_score|round|int }}%</span>
+                                                {% endif %}
+                                            </button>
+                                        {% else %}
+                                            <button class="btn btn-sm btn-primary apply-btn" data-job-id="{{ job_match.job.id }}">
+                                                Apply Now
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="empty-state text-center py-4">
+                                <i class="fas fa-briefcase fa-3x text-muted mb-3"></i>
+                                <h6>No Recommendations Yet</h6>
+                                <p class="text-muted">Upload your resume to get personalized job recommendations.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Profile Summary -->
+                <div class="dashboard-card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-user me-2"></i>Profile Summary
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="profile-info">
+                            <div class="profile-avatar">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                            <h6>{{ jobseeker.name or 'Complete your profile' }}</h6>
+                            {% if jobseeker.location %}
+                            <p class="text-muted">
+                                <i class="fas fa-map-marker-alt me-1"></i>{{ jobseeker.location }}
+                            </p>
+                            {% endif %}
+                            {% if jobseeker.experience_years %}
+                            <p class="text-muted">
+                                <i class="fas fa-briefcase me-1"></i>{{ jobseeker.experience_years }} years experience
+                            </p>
+                            {% endif %}
+                        </div>
+                        
+                        {% if jobseeker.get_skills() %}
+                        <div class="profile-skills mt-3">
+                            <h6>Top Skills</h6>
+                            <div class="skills-tags">
+                                {% for skill in jobseeker.get_skills()[:5] %}
+                                <span class="skill-tag">{{ skill }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="profile-actions mt-3">
+                            <a href="{{ url_for('jobseeker.upload_resume') }}" class="btn btn-outline-primary btn-sm w-100 mb-2">
+                                <i class="fas fa-edit me-2"></i>Edit Profile
+                            </a>
+                            {% if stats.has_resume %}
+                            <a href="{{ url_for('jobseeker.generate_resume') }}" class="btn btn-outline-secondary btn-sm w-100">
+                                <i class="fas fa-download me-2"></i>Generate Resume
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="dashboard-card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-bolt me-2"></i>Quick Actions
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="quick-actions">
+                            <a href="{{ url_for('jobseeker.view_jobs') }}" class="action-item">
+                                <div class="action-icon bg-primary">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                                <div class="action-content">
+                                    <h6>Browse Jobs</h6>
+                                    <small class="text-muted">Find your next opportunity</small>
+                                </div>
+                            </a>
+                            
+                            <a href="{{ url_for('jobseeker.upload_resume') }}" class="action-item">
+                                <div class="action-icon bg-success">
+                                    <i class="fas fa-upload"></i>
+                                </div>
+                                <div class="action-content">
+                                    <h6>Upload Resume</h6>
+                                    <small class="text-muted">Update your profile</small>
+                                </div>
+                            </a>
+                            
+                            <a href="{{ url_for('jobseeker.my_applications') }}" class="action-item">
+                                <div class="action-icon bg-info">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <div class="action-content">
+                                    <h6>My Applications</h6>
+                                    <small class="text-muted">Track your progress</small>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tips & Insights -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-lightbulb me-2"></i>Tips & Insights
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="tips-list">
+                            <div class="tip-item">
+                                <div class="tip-icon">
+                                    <i class="fas fa-star text-warning"></i>
+                                </div>
+                                <div class="tip-content">
+                                    <h6>Optimize Your Profile</h6>
+                                    <small class="text-muted">Add more skills to increase your match score</small>
+                                </div>
+                            </div>
+                            
+                            <div class="tip-item">
+                                <div class="tip-icon">
+                                    <i class="fas fa-chart-line text-success"></i>
+                                </div>
+                                <div class="tip-content">
+                                    <h6>Apply Regularly</h6>
+                                    <small class="text-muted">Active candidates get 3x more responses</small>
+                                </div>
+                            </div>
+                            
+                            <div class="tip-item">
+                                <div class="tip-icon">
+                                    <i class="fas fa-network-wired text-info"></i>
+                                </div>
+                                <div class="tip-content">
+                                    <h6>Network Online</h6>
+                                    <small class="text-muted">Connect with professionals in your field</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.dashboard-container {
+    padding: 2rem 0;
+    background: #f8fafc;
+    min-height: 100vh;
+}
+
+.welcome-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+}
+
+.welcome-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.welcome-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin: 0;
+}
+
+.profile-completion {
+    position: relative;
+}
+
+.completion-circle {
+    position: relative;
+    display: inline-block;
+}
+
+.progress-ring {
+    transform: rotate(-90deg);
+}
+
+.progress-ring-circle {
+    transition: stroke-dashoffset 0.35s;
+}
+
+.completion-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.percentage {
+    font-size: 1.2rem;
+    font-weight: 700;
+    display: block;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+}
+
+.stat-icon i {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    color: #1f2937;
+}
+
+.stat-label {
+    color: #6b7280;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.dashboard-card {
+    background: #ffffff !important;
+    color: #1f2937 !important;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.dashboard-card .card-header {
+    background: #f8fafc !important;
+    color: #1f2937 !important;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dashboard-card .card-body {
+    background: #ffffff !important;
+    color: #1f2937 !important;
+    padding: 1.5rem;
+}
+
+.action-card {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    border-radius: 20px;
+    border: none;
+}
+
+.upload-icon i {
+    font-size: 4rem;
+    opacity: 0.8;
+}
+
+.application-item {
+    background: #ffffff !important;
+    color: #1f2937 !important;
+    padding: 1rem 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.application-item:last-child {
+    border-bottom: none;
+}
+
+.job-title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #1f2937;
+}
+
+.company-name {
+    color: #6b7280;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.ai-score {
+    text-align: center;
+}
+
+.score-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: white;
+    margin: 0 auto 0.25rem;
+}
+
+.score-success { background: #10b981; }
+.score-warning { background: #f59e0b; }
+.score-danger { background: #ef4444; }
+
+.jobs-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.job-card {
+    background: #ffffff !important;
+    color: #1f2937 !important;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.job-card:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+}
+
+.job-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+}
+
+.job-location {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+}
+
+.job-skills {
+    margin-bottom: 1rem;
+}
+
+.skill-tag {
+    display: inline-block;
+    background: #f3f4f6;
+    color: #374151;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.job-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.profile-info {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.profile-avatar i {
+    font-size: 4rem;
+    color: #d1d5db;
+}
+
+.skills-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.quick-actions .action-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 0;
+    text-decoration: none;
+    color: inherit;
+    border-bottom: 1px solid #f3f4f6;
+    transition: all 0.3s ease;
+}
+
+.quick-actions .action-item:hover {
+    background: #f8fafc;
+    margin: 0 -1.5rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+.quick-actions .action-item:last-child {
+    border-bottom: none;
+}
+
+.action-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+}
+
+.action-icon i {
+    color: white;
+}
+
+.tips-list .tip-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.tips-list .tip-item:last-child {
+    border-bottom: none;
+}
+
+.tip-icon {
+    margin-right: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.empty-state {
+    color: #6b7280;
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 1rem 0;
+    }
+    
+    .welcome-header {
+        padding: 1.5rem;
+        text-align: center;
+    }
+    
+    .welcome-title {
+        font-size: 1.5rem;
+    }
+    
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Apply to job functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const applyButtons = document.querySelectorAll('.apply-btn');
+    
+    applyButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const jobId = this.dataset.jobId;
+            applyToJob(jobId, this);
+        });
+    });
+});
+
+function applyToJob(jobId, button) {
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    button.disabled = true;
+    
+    fetch(`/jobseeker/apply/${jobId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            button.innerHTML = '<i class="fas fa-check"></i> Applied';
+            button.classList.remove('btn-primary');
+            button.classList.add('btn-success');
+            showToast(`Application submitted! AI Match Score: ${data.ai_score}%`, 'success');
+        } else {
+            throw new Error(data.error || 'Application failed');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast(error.message, 'error');
+        button.innerHTML = originalText;
+        button.disabled = false;
+    });
+}
+
+// Animate stats on load
+window.addEventListener('load', function() {
+    const statNumbers = document.querySelectorAll('.stat-number');
+    
+    statNumbers.forEach(stat => {
+        const target = parseInt(stat.textContent);
+        let current = 0;
+        const increment = target / 50;
+        
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                current = target;
+                clearInterval(timer);
+            }
+            stat.textContent = Math.floor(current);
+        }, 30);
+    });
+    
+    // Animate progress ring
+    const progressRing = document.querySelector('.progress-ring-circle.progress');
+    if (progressRing) {
+        const percentage = parseInt(progressRing.dataset.percentage);
+        const circumference = 2 * Math.PI * 36; // radius = 36
+        const offset = circumference - (percentage / 100) * circumference;
+        
+        progressRing.style.strokeDasharray = circumference;
+        progressRing.style.strokeDashoffset = circumference;
+        
+        setTimeout(() => {
+            progressRing.style.transition = 'stroke-dashoffset 1s ease-in-out';
+            progressRing.style.strokeDashoffset = offset;
+        }, 500);
+    }
+});
+</script>
+{% endblock %}

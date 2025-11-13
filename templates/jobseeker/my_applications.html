@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %}My Applications - Job Seeker{% endblock %}
+
+{% block content %}
+<div class="applications-container">
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="applications-header mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="applications-title">My Applications</h1>
+                    <p class="applications-subtitle">Track your job applications and their status</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="applications-stats">
+                        <span class="badge bg-primary fs-6">{{ applications|length }} Applications</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Applications List -->
+        {% if applications %}
+            <div class="applications-list">
+                {% for application in applications %}
+                <div class="application-card mb-3">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h5 class="job-title">{{ application.job.title }}</h5>
+                                <p class="company-name">{{ application.job.company }}</p>
+                                <p class="job-location">
+                                    <i class="fas fa-map-marker-alt me-1"></i>{{ application.job.location }}
+                                </p>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <div class="ai-score">
+                                    <div class="score-circle score-{{ application.ai_score | score_class }}">
+                                        {{ application.ai_score | round | int }}%
+                                    </div>
+                                    <small class="text-muted">AI Match</small>
+                                </div>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <span class="badge bg-{{ application.status | status_class }} fs-6">
+                                    {{ application.status.title() }}
+                                </span>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <small class="text-muted">
+                                    Applied {{ application.applied_at.strftime('%b %d, %Y') }}
+                                </small>
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-outline-primary" 
+                                            onclick="viewApplication({{ application.id }})">
+                                        View Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state text-center py-5">
+                <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                <h4>No Applications Yet</h4>
+                <p class="text-muted">Start applying to jobs to see your applications here.</p>
+                <a href="{{ url_for('jobseeker.view_jobs') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-search me-2"></i>Browse Jobs
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.applications-container {
+    padding: 2rem 0;
+    background: #f8fafc;
+    min-height: 100vh;
+}
+
+.applications-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.applications-subtitle {
+    color: #6b7280;
+    font-size: 1.1rem;
+}
+
+.application-card {
+    background: #ffffff !important;
+    color: #1f2937 !important;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.application-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.job-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937 !important;
+    margin-bottom: 0.25rem;
+}
+
+.company-name {
+    color: #6b7280 !important;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.job-location {
+    color: #9ca3af !important;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.score-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: white;
+    margin: 0 auto 0.25rem;
+}
+
+.score-high { background: #10b981; }
+.score-medium { background: #f59e0b; }
+.score-low { background: #ef4444; }
+
+.empty-state {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 3rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 768px) {
+    .applications-container {
+        padding: 1rem 0;
+    }
+    
+    .applications-title {
+        font-size: 2rem;
+    }
+    
+    .application-card .row {
+        text-align: center;
+    }
+    
+    .application-card .col-md-6,
+    .application-card .col-md-2 {
+        margin-bottom: 1rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function viewApplication(applicationId) {
+    // This would show application details
+    alert('Application details - to be implemented');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,397 @@
+{% extends "base.html" %}
+
+{% block title %}Post Job - HR Dashboard{% endblock %}
+
+{% block content %}
+<div class="post-job-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="post-job-header text-center mb-5">
+                    <h1 class="post-job-title">Post a New Job</h1>
+                    <p class="post-job-subtitle">
+                        Create a detailed job posting to attract the best candidates with AI-powered matching.
+                    </p>
+                </div>
+
+                <div class="post-job-card">
+                    <div class="card-body">
+                        <form method="POST" action="{{ url_for('hr.post_job') }}" id="jobPostForm">
+                            <!-- Basic Information -->
+                            <div class="form-section mb-4">
+                                <h5 class="section-title">
+                                    <i class="fas fa-briefcase me-2"></i>Basic Information
+                                </h5>
+                                
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" id="title" name="title" placeholder="Job Title" required>
+                                            <label for="title">Job Title</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" id="employment_type" name="employment_type" required>
+                                                <option value="">Select Type</option>
+                                                <option value="Full-time">Full-time</option>
+                                                <option value="Part-time">Part-time</option>
+                                                <option value="Contract">Contract</option>
+                                                <option value="Internship">Internship</option>
+                                                <option value="Remote">Remote</option>
+                                            </select>
+                                            <label for="employment_type">Employment Type</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" id="location" name="location" placeholder="Location" required>
+                                            <label for="location">Location</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" id="salary_range" name="salary_range" placeholder="Salary Range">
+                                            <label for="salary_range">Salary Range (Optional)</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-floating mb-3">
+                                    <textarea class="form-control" id="description" name="description" style="height: 150px" placeholder="Job Description" required></textarea>
+                                    <label for="description">Job Description</label>
+                                </div>
+                            </div>
+
+                            <!-- Requirements -->
+                            <div class="form-section mb-4">
+                                <h5 class="section-title">
+                                    <i class="fas fa-list-check me-2"></i>Requirements
+                                </h5>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" id="experience_required" name="experience_required" required>
+                                                <option value="">Select Experience</option>
+                                                <option value="0">Entry Level (0 years)</option>
+                                                <option value="1">1+ years</option>
+                                                <option value="2">2+ years</option>
+                                                <option value="3">3+ years</option>
+                                                <option value="5">5+ years</option>
+                                                <option value="7">7+ years</option>
+                                                <option value="10">10+ years</option>
+                                            </select>
+                                            <label for="experience_required">Experience Required</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" id="education_required" name="education_required">
+                                                <option value="">Any Education</option>
+                                                <option value="High School">High School</option>
+                                                <option value="Associate">Associate Degree</option>
+                                                <option value="Bachelor">Bachelor's Degree</option>
+                                                <option value="Master">Master's Degree</option>
+                                                <option value="PhD">PhD</option>
+                                            </select>
+                                            <label for="education_required">Education Required</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Required Skills</label>
+                                    <div class="skills-input-container">
+                                        <div class="skills-tags" id="skillsTags"></div>
+                                        <input type="text" class="form-control" id="skillsInput" placeholder="Type a skill and press Enter">
+                                        <input type="hidden" name="required_skills" id="requiredSkills">
+                                    </div>
+                                    <small class="text-muted">Add skills that are essential for this position</small>
+                                </div>
+
+                                <div class="form-floating mb-3">
+                                    <textarea class="form-control" id="requirements" name="requirements" style="height: 100px" placeholder="Additional Requirements"></textarea>
+                                    <label for="requirements">Additional Requirements (Optional)</label>
+                                </div>
+                            </div>
+
+                            <!-- Benefits & Perks -->
+                            <div class="form-section mb-4">
+                                <h5 class="section-title">
+                                    <i class="fas fa-star me-2"></i>Benefits & Perks
+                                </h5>
+                                
+                                <div class="form-floating mb-3">
+                                    <textarea class="form-control" id="benefits" name="benefits" style="height: 100px" placeholder="Benefits and Perks"></textarea>
+                                    <label for="benefits">Benefits and Perks (Optional)</label>
+                                </div>
+                            </div>
+
+                            <!-- Application Settings -->
+                            <div class="form-section mb-4">
+                                <h5 class="section-title">
+                                    <i class="fas fa-cog me-2"></i>Application Settings
+                                </h5>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="date" class="form-control" id="application_deadline" name="application_deadline">
+                                            <label for="application_deadline">Application Deadline (Optional)</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" id="status" name="status">
+                                                <option value="active">Active - Accept Applications</option>
+                                                <option value="draft">Draft - Save for Later</option>
+                                            </select>
+                                            <label for="status">Job Status</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Buttons -->
+                            <div class="form-actions text-center">
+                                <button type="submit" class="btn btn-success btn-lg me-3">
+                                    <i class="fas fa-check me-2"></i>Post Job
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-lg me-3" onclick="saveDraft()">
+                                    <i class="fas fa-save me-2"></i>Save as Draft
+                                </button>
+                                <a href="{{ url_for('hr.dashboard') }}" class="btn btn-outline-danger btn-lg">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.post-job-container {
+    padding: 2rem 0;
+    background: #f8fafc;
+    min-height: 100vh;
+}
+
+.post-job-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 1rem;
+}
+
+.post-job-subtitle {
+    font-size: 1.1rem;
+    color: #6b7280;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.post-job-card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+}
+
+.form-section {
+    padding: 1.5rem;
+    border-radius: 12px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+}
+
+.section-title {
+    color: #374151;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.form-floating > .form-control,
+.form-floating > .form-select {
+    background: #ffffff;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+.form-floating > .form-control:focus,
+.form-floating > .form-select:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+}
+
+.skills-input-container {
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0.75rem;
+    background: #ffffff;
+    min-height: 60px;
+}
+
+.skills-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.skill-tag {
+    display: inline-flex;
+    align-items: center;
+    background: #6366f1;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.skill-tag .remove-skill {
+    background: none;
+    border: none;
+    color: white;
+    margin-left: 0.5rem;
+    cursor: pointer;
+    padding: 0;
+    font-size: 0.75rem;
+}
+
+.skill-tag .remove-skill:hover {
+    opacity: 0.7;
+}
+
+#skillsInput {
+    border: none;
+    outline: none;
+    flex: 1;
+    min-width: 200px;
+}
+
+.form-actions {
+    padding: 2rem 0;
+}
+
+.btn-lg {
+    padding: 0.75rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+    .post-job-container {
+        padding: 1rem 0;
+    }
+    
+    .post-job-title {
+        font-size: 2rem;
+    }
+    
+    .form-section {
+        padding: 1rem;
+    }
+    
+    .form-actions .btn {
+        display: block;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const skillsInput = document.getElementById('skillsInput');
+    const skillsTags = document.getElementById('skillsTags');
+    const requiredSkills = document.getElementById('requiredSkills');
+    let skills = [];
+
+    // Common skills suggestions
+    const commonSkills = [
+        'JavaScript', 'Python', 'Java', 'React', 'Node.js', 'HTML', 'CSS', 'SQL',
+        'Git', 'AWS', 'Docker', 'Kubernetes', 'MongoDB', 'PostgreSQL', 'Redis',
+        'Angular', 'Vue.js', 'TypeScript', 'C++', 'C#', 'PHP', 'Ruby', 'Go',
+        'Machine Learning', 'Data Analysis', 'Project Management', 'Agile', 'Scrum'
+    ];
+
+    skillsInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ',') {
+            e.preventDefault();
+            const skill = this.value.trim();
+            if (skill && !skills.includes(skill)) {
+                addSkill(skill);
+                this.value = '';
+            }
+        }
+    });
+
+    function addSkill(skill) {
+        skills.push(skill);
+        updateSkillsDisplay();
+        updateHiddenInput();
+    }
+
+    function removeSkill(skill) {
+        skills = skills.filter(s => s !== skill);
+        updateSkillsDisplay();
+        updateHiddenInput();
+    }
+
+    function updateSkillsDisplay() {
+        skillsTags.innerHTML = '';
+        skills.forEach(skill => {
+            const tag = document.createElement('span');
+            tag.className = 'skill-tag';
+            tag.innerHTML = `
+                ${skill}
+                <button type="button" class="remove-skill" onclick="removeSkillByName('${skill}')">
+                    ×
+                </button>
+            `;
+            skillsTags.appendChild(tag);
+        });
+    }
+
+    function updateHiddenInput() {
+        requiredSkills.value = skills.join(',');
+    }
+
+    // Global function for remove button
+    window.removeSkillByName = function(skill) {
+        removeSkill(skill);
+    };
+
+    // Form submission
+    document.getElementById('jobPostForm').addEventListener('submit', function(e) {
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Posting Job...';
+        submitBtn.disabled = true;
+    });
+});
+
+function saveDraft() {
+    const form = document.getElementById('jobPostForm');
+    const statusField = document.getElementById('status');
+    statusField.value = 'draft';
+    form.submit();
+}
+</script>
+{% endblock %}

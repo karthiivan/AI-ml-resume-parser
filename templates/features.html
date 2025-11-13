@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Features - AI Resume Parser{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-primary">Features</h1>
+        <p class="lead text-muted">Powerful tools for modern recruitment</p>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-file-alt fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">Resume Parsing</h5>
+                    <p class="card-text text-muted">
+                        Automatically extract key information from resumes including skills, 
+                        experience, education, and contact details.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-robot fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">AI Matching</h5>
+                    <p class="card-text text-muted">
+                        Advanced machine learning algorithms match candidates with job 
+                        requirements based on skills and experience.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-chart-bar fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">Compatibility Scoring</h5>
+                    <p class="card-text text-muted">
+                        Get detailed compatibility scores showing how well candidates 
+                        match specific job requirements.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-users fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">Dual Interface</h5>
+                    <p class="card-text text-muted">
+                        Separate dashboards for job seekers and HR professionals with 
+                        tailored features for each user type.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-shield-alt fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">Secure & Private</h5>
+                    <p class="card-text text-muted">
+                        Your data is protected with industry-standard security measures 
+                        and privacy controls.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-download fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">Report Generation</h5>
+                    <p class="card-text text-muted">
+                        Generate detailed reports and analytics to track recruitment 
+                        performance and candidate insights.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center mt-5">
+        <h2 class="h3 mb-4">Ready to get started?</h2>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg me-3">Sign Up Now</a>
+        <a href="{{ url_for('main.about') }}" class="btn btn-outline-primary btn-lg">Learn More</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,386 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Jobs - Job Seeker{% endblock %}
+
+{% block content %}
+<div class="jobs-container">
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="jobs-header mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="jobs-title">Browse Jobs</h1>
+                    <p class="jobs-subtitle">Find your perfect match with AI-powered job recommendations</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="jobs-stats">
+                        <span class="badge bg-primary fs-6">{{ job_matches|length }} Jobs Found</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-card mb-4">
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Search Keywords</label>
+                        <input type="text" class="form-control" name="search" 
+                               value="{{ filters.search or '' }}" 
+                               placeholder="Job title, skills, company...">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Location</label>
+                        <input type="text" class="form-control" name="location" 
+                               value="{{ filters.location or '' }}" 
+                               placeholder="City, State">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Experience</label>
+                        <select class="form-select" name="experience">
+                            <option value="">Any</option>
+                            <option value="0-2" {{ 'selected' if filters.experience == '0-2' }}>0-2 years</option>
+                            <option value="3-5" {{ 'selected' if filters.experience == '3-5' }}>3-5 years</option>
+                            <option value="6-10" {{ 'selected' if filters.experience == '6-10' }}>6-10 years</option>
+                            <option value="10+" {{ 'selected' if filters.experience == '10+' }}>10+ years</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Job Type</label>
+                        <select class="form-select" name="job_type">
+                            <option value="">Any</option>
+                            <option value="Full-time" {{ 'selected' if filters.job_type == 'Full-time' }}>Full-time</option>
+                            <option value="Part-time" {{ 'selected' if filters.job_type == 'Part-time' }}>Part-time</option>
+                            <option value="Contract" {{ 'selected' if filters.job_type == 'Contract' }}>Contract</option>
+                            <option value="Remote" {{ 'selected' if filters.job_type == 'Remote' }}>Remote</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Jobs List -->
+        <div class="jobs-list">
+            {% if job_matches %}
+                <div class="row">
+                    {% for match in job_matches %}
+                    <div class="col-lg-6 mb-4">
+                        <div class="job-card">
+                            <div class="job-header">
+                                <div class="job-info">
+                                    <h5 class="job-title">{{ match.job.title }}</h5>
+                                    <p class="company-name">{{ match.job.company }}</p>
+                                    <p class="job-location">
+                                        <i class="fas fa-map-marker-alt me-1"></i>{{ match.job.location }}
+                                    </p>
+                                </div>
+                                <div class="match-score">
+                                    <div class="score-circle score-{{ match.match_score | score_class }}">
+                                        {{ match.match_score | round | int }}%
+                                    </div>
+                                    <small class="text-muted">AI Match</small>
+                                </div>
+                            </div>
+
+                            <div class="job-details">
+                                <div class="job-meta mb-3">
+                                    <span class="badge bg-light text-dark me-2">{{ match.job.employment_type }}</span>
+                                    {% if match.job.salary_range %}
+                                    <span class="badge bg-success">{{ match.job.salary_range }}</span>
+                                    {% endif %}
+                                </div>
+
+                                <p class="job-description">
+                                    {{ match.job.description[:150] }}{% if match.job.description|length > 150 %}...{% endif %}
+                                </p>
+
+                                {% if match.job.get_required_skills() %}
+                                <div class="job-skills mb-3">
+                                    {% for skill in match.job.get_required_skills()[:5] %}
+                                    <span class="skill-tag">{{ skill }}</span>
+                                    {% endfor %}
+                                    {% if match.job.get_required_skills()|length > 5 %}
+                                    <span class="skill-tag">+{{ match.job.get_required_skills()|length - 5 }} more</span>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="job-footer">
+                                <div class="job-posted">
+                                    <small class="text-muted">
+                                        Posted {{ match.job.created_at.strftime('%b %d, %Y') }}
+                                    </small>
+                                </div>
+                                <div class="job-actions">
+                                    <button class="btn btn-outline-primary btn-sm me-2" 
+                                            onclick="viewJobDetails({{ match.job.id }})">
+                                        <i class="fas fa-eye me-1"></i>View Details
+                                    </button>
+                                    {% if match.has_applied %}
+                                        <button class="btn btn-success btn-sm" disabled>
+                                            <i class="fas fa-check me-1"></i>Applied
+                                            {% if match.application %}
+                                                <span class="badge bg-light text-dark ms-1">{{ match.application.ai_score|round|int }}%</span>
+                                            {% endif %}
+                                        </button>
+                                    {% else %}
+                                        <button class="btn btn-primary btn-sm apply-btn" 
+                                                data-job-id="{{ match.job.id }}">
+                                            <i class="fas fa-paper-plane me-1"></i>Apply Now
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state text-center py-5">
+                    <i class="fas fa-search fa-4x text-muted mb-3"></i>
+                    <h4>No Jobs Found</h4>
+                    <p class="text-muted">Try adjusting your search filters or check back later for new opportunities.</p>
+                    <a href="{{ url_for('jobseeker.view_jobs') }}" class="btn btn-primary">
+                        <i class="fas fa-refresh me-2"></i>Clear Filters
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Job Details Modal -->
+<div class="modal fade" id="jobDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Job Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="jobDetailsContent">
+                <!-- Job details will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.jobs-container {
+    padding: 2rem 0;
+    background: #f8fafc;
+    min-height: 100vh;
+}
+
+.jobs-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.jobs-subtitle {
+    color: #6b7280;
+    font-size: 1.1rem;
+}
+
+.filters-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+}
+
+.job-card {
+    background: #ffffff !important;
+    color: #1f2937 !important;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.job-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.job-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.job-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937 !important;
+    margin-bottom: 0.25rem;
+}
+
+.company-name {
+    color: #6b7280 !important;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.job-location {
+    color: #9ca3af !important;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.match-score {
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.score-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    color: white;
+    margin-bottom: 0.25rem;
+}
+
+.score-high { background: #10b981; }
+.score-medium { background: #f59e0b; }
+.score-low { background: #ef4444; }
+
+.job-description {
+    color: #6b7280 !important;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.skill-tag {
+    display: inline-block;
+    background: #f3f4f6;
+    color: #374151 !important;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.job-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+.empty-state {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 3rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 768px) {
+    .jobs-container {
+        padding: 1rem 0;
+    }
+    
+    .jobs-title {
+        font-size: 2rem;
+    }
+    
+    .job-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .match-score {
+        align-self: flex-end;
+        margin-top: 1rem;
+    }
+    
+    .job-footer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+    
+    .job-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .job-actions .btn {
+        flex: 1;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Apply to job functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const applyButtons = document.querySelectorAll('.apply-btn');
+    
+    applyButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const jobId = this.dataset.jobId;
+            applyToJob(jobId, this);
+        });
+    });
+});
+
+function applyToJob(jobId, button) {
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    button.disabled = true;
+    
+    fetch(`/jobseeker/apply/${jobId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            button.innerHTML = '<i class="fas fa-check"></i> Applied';
+            button.classList.remove('btn-primary');
+            button.classList.add('btn-success');
+            alert(`Application submitted! AI Match Score: ${data.ai_score}%`);
+        } else {
+            throw new Error(data.error || 'Application failed');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert(error.message);
+        button.innerHTML = originalText;
+        button.disabled = false;
+    });
+}
+
+function viewJobDetails(jobId) {
+    // This would load job details in a modal
+    alert('Job details functionality - to be implemented');
+}
+</script>
+{% endblock %}

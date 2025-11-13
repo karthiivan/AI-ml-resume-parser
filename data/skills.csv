@@ -1,0 +1,11 @@
+skill,category,popularity
+Python,Programming Language,95
+JavaScript,Programming Language,92
+React,Frontend Framework,88
+Node.js,Backend Framework,85
+AWS,Cloud Platform,90
+Docker,DevOps Tool,82
+Kubernetes,DevOps Tool,78
+Java,Programming Language,89
+Spring Boot,Backend Framework,75
+MySQL,Database,80

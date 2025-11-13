@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Jobs - HR Dashboard{% endblock %}
+
+{% block content %}
+<div class="jobs-container">
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="jobs-header mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="jobs-title">Manage Jobs</h1>
+                    <p class="jobs-subtitle">View and manage all your job postings</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <a href="{{ url_for('hr.post_job') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-plus me-2"></i>Post New Job
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jobs List -->
+        {% if jobs %}
+            <div class="jobs-list">
+                {% for job in jobs %}
+                <div class="job-card mb-4">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h5 class="job-title">{{ job.title }}</h5>
+                                <p class="job-details">
+                                    <i class="fas fa-map-marker-alt me-2"></i>{{ job.location }}
+                                    <span class="mx-2">•</span>
+                                    <i class="fas fa-briefcase me-2"></i>{{ job.employment_type }}
+                                    {% if job.salary_range %}
+                                    <span class="mx-2">•</span>
+                                    <i class="fas fa-dollar-sign me-2"></i>{{ job.salary_range }}
+                                    {% endif %}
+                                </p>
+                                <p class="job-description">
+                                    {{ job.description[:150] }}{% if job.description|length > 150 %}...{% endif %}
+                                </p>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <div class="job-stats">
+                                    <div class="stat-number">{{ job.applications|length }}</div>
+                                    <small class="text-muted">Applications</small>
+                                </div>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <span class="badge bg-{{ 'success' if job.status == 'active' else 'warning' }} fs-6">
+                                    {{ job.status.title() }}
+                                </span>
+                                <div class="mt-1">
+                                    <small class="text-muted">
+                                        Posted {{ job.created_at.strftime('%b %d') }}
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="job-actions">
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            Actions
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="{{ url_for('hr.view_job_applications', job_id=job.id) }}">
+                                                <i class="fas fa-users me-2"></i>View Applications
+                                            </a></li>
+                                            <li><a class="dropdown-item" href="{{ url_for('hr.edit_job', job_id=job.id) }}">
+                                                <i class="fas fa-edit me-2"></i>Edit Job
+                                            </a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            {% if job.status == 'active' %}
+                                            <li><a class="dropdown-item" href="#" onclick="toggleJobStatus({{ job.id }}, 'inactive')">
+                                                <i class="fas fa-pause me-2"></i>Pause Job
+                                            </a></li>
+                                            {% else %}
+                                            <li><a class="dropdown-item" href="#" onclick="toggleJobStatus({{ job.id }}, 'active')">
+                                                <i class="fas fa-play me-2"></i>Activate Job
+                                            </a></li>
+                                            {% endif %}
+                                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteJob({{ job.id }})">
+                                                <i class="fas fa-trash me-2"></i>Delete Job
+                                            </a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state text-center py-5">
+                <i class="fas fa-briefcase fa-4x text-muted mb-3"></i>
+                <h4>No Jobs Posted Yet</h4>
+                <p class="text-muted">Create your first job posting to start receiving applications from qualified candidates.</p>
+                <a href="{{ url_for('hr.post_job') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus me-2"></i>Post Your First Job
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.jobs-container {
+    padding: 2rem 0;
+    background: #f8fafc;
+    min-height: 100vh;
+}
+
+.jobs-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.jobs-subtitle {
+    color: #6b7280;
+    font-size: 1.1rem;
+}
+
+.job-card {
+    background: #ffffff !important;
+    color: #1f2937 !important;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.job-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.job-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937 !important;
+    margin-bottom: 0.5rem;
+}
+
+.job-details {
+    color: #6b7280 !important;
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+}
+
+.job-description {
+    color: #6b7280 !important;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.job-stats {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1f2937;
+    display: block;
+}
+
+.empty-state {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 3rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 768px) {
+    .jobs-container {
+        padding: 1rem 0;
+    }
+    
+    .jobs-title {
+        font-size: 2rem;
+    }
+    
+    .job-card .row {
+        text-align: center;
+    }
+    
+    .job-card .col-md-6,
+    .job-card .col-md-2 {
+        margin-bottom: 1rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleJobStatus(jobId, newStatus) {
+    if (confirm(`Are you sure you want to ${newStatus === 'active' ? 'activate' : 'pause'} this job?`)) {
+        fetch(`/hr/job/${jobId}/status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ status: newStatus })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error updating job status');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error updating job status');
+        });
+    }
+}
+
+function deleteJob(jobId) {
+    if (confirm('Are you sure you want to delete this job? This action cannot be undone.')) {
+        fetch(`/hr/job/${jobId}/delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error deleting job');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting job');
+        });
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,387 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Resume - Job Seeker{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="upload-header text-center mb-5">
+                    <h1 class="upload-title">Upload Your Resume</h1>
+                    <p class="upload-subtitle">
+                        Let our AI analyze your resume and extract key information to help you find the perfect job matches.
+                    </p>
+                </div>
+
+                <div class="upload-card">
+                    <div class="card-body">
+                        <!-- Upload Form -->
+                        <form id="resumeUploadForm" method="POST" enctype="multipart/form-data" action="{{ url_for('jobseeker.upload_resume') }}">
+                            <div class="drop-zone" id="dropZone">
+                                <div class="drop-zone-content">
+                                    <div class="upload-icon mb-3">
+                                        <i class="fas fa-cloud-upload-alt fa-4x text-primary"></i>
+                                    </div>
+                                    <h4>Drag & Drop Your Resume</h4>
+                                    <p class="text-muted mb-3">or click to browse files</p>
+                                    <input type="file" name="resume_file" id="resumeFile" accept=".pdf,.doc,.docx,.txt" required style="display: none;">
+                                    <button type="button" class="btn btn-primary btn-lg" onclick="document.getElementById('resumeFile').click()">
+                                        <i class="fas fa-folder-open me-2"></i>Choose File
+                                    </button>
+                                    <div class="file-info mt-3"></div>
+                                </div>
+                            </div>
+
+                            <div class="upload-info mt-4">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6><i class="fas fa-check-circle text-success me-2"></i>Supported Formats</h6>
+                                        <ul class="list-unstyled">
+                                            <li><i class="fas fa-file-pdf text-danger me-2"></i>PDF (.pdf)</li>
+                                            <li><i class="fas fa-file-word text-primary me-2"></i>Word (.doc, .docx)</li>
+                                            <li><i class="fas fa-file-alt text-secondary me-2"></i>Text (.txt)</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6><i class="fas fa-info-circle text-info me-2"></i>What We Extract</h6>
+                                        <ul class="list-unstyled">
+                                            <li><i class="fas fa-user me-2"></i>Personal Information</li>
+                                            <li><i class="fas fa-briefcase me-2"></i>Work Experience</li>
+                                            <li><i class="fas fa-graduation-cap me-2"></i>Education</li>
+                                            <li><i class="fas fa-cogs me-2"></i>Skills & Certifications</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="upload-actions mt-4 text-center">
+                                <button type="submit" class="btn btn-success btn-lg me-3" id="uploadBtn" disabled>
+                                    <i class="fas fa-upload me-2"></i>Upload & Parse Resume
+                                </button>
+                                <a href="{{ url_for('jobseeker.dashboard') }}" class="btn btn-outline-secondary btn-lg">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Parsing Results (Hidden initially) -->
+                <div class="parsing-results mt-5" id="parsingResults" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-robot me-2"></i>AI Parsing Results
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="parsedData"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.upload-container {
+    padding: 2rem 0;
+    background: #f8fafc;
+    min-height: 100vh;
+}
+
+.upload-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 1rem;
+}
+
+.upload-subtitle {
+    font-size: 1.1rem;
+    color: #6b7280;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.upload-card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+}
+
+.drop-zone {
+    border: 3px dashed #d1d5db;
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background: #f9fafb;
+}
+
+.drop-zone:hover {
+    border-color: #6366f1;
+    background: #f0f9ff;
+}
+
+.drop-zone.drag-over {
+    border-color: #10b981;
+    background: #ecfdf5;
+    transform: scale(1.02);
+}
+
+.upload-icon {
+    opacity: 0.7;
+}
+
+.drop-zone h4 {
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.file-info {
+    min-height: 40px;
+}
+
+.selected-file {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f3f4f6;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.file-name {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.file-size {
+    font-size: 0.9rem;
+}
+
+.upload-info {
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+}
+
+.upload-info h6 {
+    color: #374151;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.upload-info ul li {
+    padding: 0.25rem 0;
+    color: #6b7280;
+}
+
+.parsing-results .card {
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.parsing-results .card-header {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border-radius: 16px 16px 0 0;
+}
+
+@media (max-width: 768px) {
+    .upload-container {
+        padding: 1rem 0;
+    }
+    
+    .upload-title {
+        font-size: 2rem;
+    }
+    
+    .drop-zone {
+        padding: 2rem 1rem;
+    }
+    
+    .upload-actions .btn {
+        display: block;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('resumeFile');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const fileInfo = document.querySelector('.file-info');
+    const form = document.getElementById('resumeUploadForm');
+
+    // File input change handler
+    fileInput.addEventListener('change', function(e) {
+        handleFileSelect(e.target.files);
+    });
+
+    // Drag and drop handlers
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+        document.body.addEventListener(eventName, preventDefaults, false);
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.add('drag-over'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.remove('drag-over'), false);
+    });
+
+    dropZone.addEventListener('drop', function(e) {
+        const files = e.dataTransfer.files;
+        handleFileSelect(files);
+    }, false);
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    function handleFileSelect(files) {
+        if (files.length === 0) return;
+
+        const file = files[0];
+        const maxSize = 16 * 1024 * 1024; // 16MB
+        const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+
+        // Validate file size
+        if (file.size > maxSize) {
+            alert('File size must be less than 16MB');
+            return;
+        }
+
+        // Validate file type
+        if (!allowedTypes.includes(file.type)) {
+            alert('Please select a PDF, DOC, DOCX, or TXT file');
+            return;
+        }
+
+        // Update UI
+        fileInput.files = files;
+        updateFileDisplay(file);
+        uploadBtn.disabled = false;
+    }
+
+    function updateFileDisplay(file) {
+        fileInfo.innerHTML = `
+            <div class="selected-file">
+                <i class="fas fa-file-alt me-2 text-primary"></i>
+                <span class="file-name">${file.name}</span>
+                <span class="file-size text-muted ms-2">(${formatFileSize(file.size)})</span>
+                <button type="button" class="btn btn-sm btn-outline-danger ms-2" onclick="clearFile()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // Form submission with AI analysis
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>AI Analyzing...';
+        submitBtn.disabled = true;
+        
+        const formData = new FormData(form);
+        
+        fetch(form.action, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAIResults(data);
+            } else {
+                alert('Error: ' + (data.error || 'Upload failed'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Upload failed: ' + error.message);
+        })
+        .finally(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        });
+    });
+    
+    // Show AI analysis results
+    function showAIResults(data) {
+        const resultsHtml = `
+            <div class="ai-results mt-4">
+                <div class="alert alert-success">
+                    <h5><i class="fas fa-robot me-2"></i>AI Analysis Complete!</h5>
+                    <p>${data.message}</p>
+                    ${data.ai_analysis ? `
+                        <div class="ai-summary mt-3">
+                            <strong>Applications Created:</strong> ${data.ai_analysis.applications_created}<br>
+                            ${data.ai_analysis.job_analyses ? `
+                                <div class="job-matches mt-2">
+                                    <strong>Top Job Matches:</strong>
+                                    ${data.ai_analysis.job_analyses.slice(0, 3).map(job => `
+                                        <div class="job-match-item">
+                                            <span class="job-title">${job.job_title}</span> at <span class="company">${job.company}</span>
+                                            - <span class="ai-score ${job.ai_score >= 75 ? 'text-success' : job.ai_score >= 50 ? 'text-warning' : 'text-danger'}">${job.ai_score}% Match</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    ` : ''}
+                    <div class="mt-3">
+                        <a href="{{ url_for('jobseeker.dashboard') }}" class="btn btn-primary">View Dashboard</a>
+                        <a href="{{ url_for('jobseeker.my_applications') }}" class="btn btn-outline-primary ms-2">View Applications</a>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Insert results after the form
+        form.insertAdjacentHTML('afterend', resultsHtml);
+        
+        // Scroll to results
+        document.querySelector('.ai-results').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Global function for clear button
+    window.clearFile = function() {
+        fileInput.value = '';
+        fileInfo.innerHTML = '';
+        uploadBtn.disabled = true;
+    };
+});
+</script>
+{% endblock %}

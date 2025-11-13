@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Job - HR Dashboard{% endblock %}
+
+{% block content %}
+<div class="post-job-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="post-job-header text-center mb-5">
+                    <h1 class="post-job-title">Edit Job Posting</h1>
+                    <p class="post-job-subtitle">
+                        Update your job posting details to attract the best candidates.
+                    </p>
+                </div>
+
+                <div class="post-job-card">
+                    <div class="card-body">
+                        <form method="POST" action="{{ url_for('hr.edit_job', job_id=job.id) }}" id="jobEditForm">
+                            <!-- Basic Information -->
+                            <div class="form-section mb-4">
+                                <h5 class="section-title">
+                                    <i class="fas fa-briefcase me-2"></i>Basic Information
+                                </h5>
+                                
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" id="title" name="title" 
+                                                   value="{{ job.title }}" placeholder="Job Title" required>
+                                            <label for="title">Job Title</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" id="employment_type" name="employment_type" required>
+                                                <option value="">Select Type</option>
+                                                <option value="Full-time" {{ 'selected' if job.employment_type == 'Full-time' }}>Full-time</option>
+                                                <option value="Part-time" {{ 'selected' if job.employment_type == 'Part-time' }}>Part-time</option>
+                                                <option value="Contract" {{ 'selected' if job.employment_type == 'Contract' }}>Contract</option>
+                                                <option value="Internship" {{ 'selected' if job.employment_type == 'Internship' }}>Internship</option>
+                                                <option value="Remote" {{ 'selected' if job.employment_type == 'Remote' }}>Remote</option>
+                                            </select>
+                                            <label for="employment_type">Employment Type</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" id="location" name="location" 
+                                                   value="{{ job.location }}" placeholder="Location" required>
+                                            <label for="location">Location</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" id="salary_range" name="salary_range" 
+                                                   value="{{ job.salary_range or '' }}" placeholder="e.g., $50,000 - $70,000">
+                                            <label for="salary_range">Salary Range (Optional)</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-floating mb-3">
+                                    <input type="number" class="form-control" id="experience_required" name="experience_required" 
+                                           value="{{ job.experience_required or 0 }}" min="0" max="20" placeholder="Years">
+                                    <label for="experience_required">Required Experience (Years)</label>
+                                </div>
+                            </div>
+
+                            <!-- Job Description -->
+                            <div class="form-section mb-4">
+                                <h5 class="section-title">
+                                    <i class="fas fa-file-alt me-2"></i>Job Description
+                                </h5>
+                                
+                                <div class="form-floating mb-3">
+                                    <textarea class="form-control" id="description" name="description" 
+                                              style="height: 200px" placeholder="Job Description" required>{{ job.description }}</textarea>
+                                    <label for="description">Detailed Job Description</label>
+                                </div>
+                            </div>
+
+                            <!-- Skills & Requirements -->
+                            <div class="form-section mb-4">
+                                <h5 class="section-title">
+                                    <i class="fas fa-cogs me-2"></i>Skills & Requirements
+                                </h5>
+                                
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="required_skills" name="required_skills" 
+                                           value="{{ job.get_required_skills() | join(', ') }}" 
+                                           placeholder="e.g., Python, JavaScript, React">
+                                    <label for="required_skills">Required Skills (comma-separated)</label>
+                                    <div class="form-text">
+                                        Enter skills separated by commas. These will be used for AI-powered candidate matching.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="form-actions d-flex justify-content-between">
+                                <a href="{{ url_for('hr.view_jobs') }}" class="btn btn-outline-secondary btn-lg">
+                                    <i class="fas fa-arrow-left me-2"></i>Cancel
+                                </a>
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-save me-2"></i>Update Job
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.post-job-container {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.post-job-header {
+    margin-bottom: 2rem;
+}
+
+.post-job-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.post-job-subtitle {
+    font-size: 1.1rem;
+    color: #6c757d;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.post-job-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    border: none;
+    overflow: hidden;
+}
+
+.form-section {
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 1.5rem;
+}
+
+.form-section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.section-title {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.form-floating > .form-control,
+.form-floating > .form-select {
+    border-radius: 12px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.form-floating > .form-control:focus,
+.form-floating > .form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-actions {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.btn-lg {
+    padding: 0.75rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .post-job-title {
+        font-size: 2rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .form-actions .btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

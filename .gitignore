@@ -1,0 +1,56 @@
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Flask
+instance/
+.webassets-cache
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+database/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Uploads and generated files
+uploads/resumes/*.pdf
+uploads/resumes/*.docx
+uploads/resumes/*.txt
+uploads/generated/*
+uploads/reports/*
+!uploads/resumes/sample_resume.txt
+!uploads/generated/.gitkeep
+!uploads/reports/.gitkeep
+
+# ML Models (trained models can be large)
+ml_models/trained/*.pkl
+ml_models/trained/*.joblib
+ml_models/trained_classifier/*.pkl
+ml_models/trained_matcher/*.pkl
+
+# Logs
+*.log
+
+# Environment variables
+.env
+.env.local

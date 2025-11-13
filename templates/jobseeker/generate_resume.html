@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block title %}Generate Resume - AI Resume Parser{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">Generate Resume</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ url_for('jobseeker.dashboard') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Generate Resume</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-file-pdf me-2"></i>Resume Generator
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" id="generateResumeForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="template" class="form-label">Resume Template</label>
+                                <select class="form-select" id="template" name="template" required>
+                                    <option value="">Select Template</option>
+                                    <option value="professional">Professional</option>
+                                    <option value="modern">Modern</option>
+                                    <option value="creative">Creative</option>
+                                    <option value="simple">Simple</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="format" class="form-label">Output Format</label>
+                                <select class="form-select" id="format" name="format" required>
+                                    <option value="pdf">PDF</option>
+                                    <option value="docx">Word Document</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="include_sections" class="form-label">Include Sections</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="include_contact" name="include_sections" value="contact" checked>
+                                        <label class="form-check-label" for="include_contact">Contact Information</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="include_summary" name="include_sections" value="summary" checked>
+                                        <label class="form-check-label" for="include_summary">Professional Summary</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="include_skills" name="include_sections" value="skills" checked>
+                                        <label class="form-check-label" for="include_skills">Skills</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="include_experience" name="include_sections" value="experience" checked>
+                                        <label class="form-check-label" for="include_experience">Work Experience</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="include_education" name="include_sections" value="education" checked>
+                                        <label class="form-check-label" for="include_education">Education</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="include_projects" name="include_sections" value="projects">
+                                        <label class="form-check-label" for="include_projects">Projects</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="custom_summary" class="form-label">Custom Summary (Optional)</label>
+                            <textarea class="form-control" id="custom_summary" name="custom_summary" rows="3" 
+                                placeholder="Enter a custom professional summary or leave blank to use AI-generated content"></textarea>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-download me-2"></i>Generate Resume
+                            </button>
+                            <a href="{{ url_for('jobseeker.dashboard') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Resume Preview
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <i class="fas fa-file-pdf fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">Your generated resume will appear here</p>
+                    </div>
+
+                    {% if jobseeker %}
+                    <div class="mt-4">
+                        <h6>Current Profile Information:</h6>
+                        <ul class="list-unstyled small">
+                            <li><strong>Name:</strong> {{ jobseeker.name or 'Not provided' }}</li>
+                            <li><strong>Email:</strong> {{ current_user.email }}</li>
+                            <li><strong>Phone:</strong> {{ jobseeker.phone or 'Not provided' }}</li>
+                            <li><strong>Location:</strong> {{ jobseeker.location or 'Not provided' }}</li>
+                            <li><strong>Experience:</strong> {{ jobseeker.experience_years or 0 }} years</li>
+                            <li><strong>Skills:</strong> {{ jobseeker.get_skills()|length }} skills</li>
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>Tips
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled small">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Professional template works best for corporate jobs
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Creative template is great for design roles
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Include all relevant sections for better results
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            PDF format is recommended for applications
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('generateResumeForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    
+    // Show loading state
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating...';
+    
+    fetch(this.action || window.location.href, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (response.ok) {
+            // If successful, trigger download
+            return response.blob().then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'resume.' + formData.get('format');
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                // Show success message
+                showAlert('Resume generated successfully!', 'success');
+            });
+        } else {
+            return response.json().then(data => {
+                throw new Error(data.error || 'Failed to generate resume');
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert(error.message, 'danger');
+    })
+    .finally(() => {
+        // Reset button
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+    });
+});
+
+function showAlert(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    const container = document.querySelector('.container-fluid');
+    container.insertBefore(alertDiv, container.firstChild);
+    
+    // Auto dismiss after 5 seconds
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}
